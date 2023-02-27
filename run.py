@@ -44,7 +44,44 @@ def rowToDict(country):
 @app.route('/country', methods=['GET','POST'])
 def country():
         if request.method == 'GET':
-                countries=CountryModel.query.all()
+                
+                #IF QUERIES/FILTERS  APPLICABLE
+                
+                page = request.args.get('page',  type=int)
+                limit = request.args.get('limit', type=int)
+                name = request.args.get('name')
+                region = request.args.get('region')
+                sub_region = request.args.get('subregion')
+                data = request.args.get('sort_by')
+                
+                sort_query = ''
+                search_query=''
+                
+                if data == 'a_toz':sort_query = '(CountryModel.name)'
+                elif data == 'z_toa':sort_query = '(CountryModel.name.desc())'
+                elif data == 'population_high_to_low':sort_query = '(CountryModel.population)'
+                elif data == 'population_low_to_high':sort_query = '(CountryModel.population.desc())'
+                elif data == 'area_high_to_low':sort_query = '(CountryModel.area)'
+                elif data == 'area_low_to_high':sort_query = '(CountryModel.area.desc())'
+
+                if name:search_query += 'name=name,'
+                if region:search_query += 'region=region,'
+                if sub_region:search_query += 'subregion=sub_region'
+
+                final_query = 'CountryModel.query'
+
+                if search_query: final_query += f'.filter_by({search_query})' 
+                if sort_query:   final_query += f'.order_by{sort_query}'
+                
+
+
+                final_query += f'.paginate(page={page}, per_page={limit})'
+                countries = eval(final_query)
+                
+        
+                #IF QUERIES/FILTERS NOT APPLICABLE and also continued for applicable
+                
+                # countries=CountryModel.query.all()
                 displayCountries={}
                 data={}
                 listcountry=[]
@@ -55,6 +92,7 @@ def country():
                 displayCountries['data']=data
                 displayCountries['message']='Country List'
                 return jsonify(displayCountries)
+        
         elif request.method == 'POST':
                 data = request.form
                 entry = CountryModel(id=data['id'], name=data['name'], cca=data['cca3'],

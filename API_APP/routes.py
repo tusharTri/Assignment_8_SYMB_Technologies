@@ -1,73 +1,120 @@
-# from API_APP.models import CountryModel
-# from flask import Blueprint
-# from flask import Flask, jsonify
+# # from API_APP.models import CountryModel
+# # from flask import Blueprint
+# # from flask import Flask, jsonify
 
-# main = Blueprint('main', __name__)
+# # main = Blueprint('main', __name__)
 
-# from API_APP import db
+# # from API_APP import db
 
-# @main.route('/country')
-# def get():
-#         countries=CountryModel.query.all()
-#         displayCountries={}
-#         data={}
-        
-#         displayCountries['message']='Country List'
-#         listcountry=[]
-#         for country in countries:
-#                 listcountry.append(country.to_dict())
-#         data['list']=listcountry
-#         displayCountries['data']=data
-#         return (displayCountries)
-        
-#         # for country in countries:
-#                 # displayCountries[country.id]={                
-#                 #         "id": country.id,
-#                 #         "name": country.name,
-#                 #         "cca3": country.cca3,
-#                 #         "currency_code": country.currency_code,
-#                 #         "currency": country.currency,
-#                 #         "capital": country.capital,
-#                 #         "region":country.region ,
-#                 #         "subregion": country.subregion,
-#                 #         "area": country.area,
-#                 #         "map_url": country.map_url,
-#                 #         "population": country.polulation,
-#                 #         "flag_url":country.flag_url
-#                 # }
-        
-        
-#         # if request.method=='POST':
-#         #         id: countries[-1]['id']+1
-#         #         name: request.form['name']
-#         #         cca3: request.form['cca3']
-#         #         currency_code: request.form['currency_code']
-#         #         currency: request.form['currency']
-#         #         capital: request.form['capital']
-#         region:request.form['region']
-#         #         subregion: request.form['subregion']
-#         #         area: request.form['area']
-#         #         map_url: request.form['map_url']
-#         #         population: request.form['population']
-#         #         flag_url:request.form['flag_url']
-                           
-#         #         new_obj={
-#         #                 "id": id,
-#         #                 "name": name,
-#         #                 "cca3": cca3,
-#         #                 "currency_code": currency_code,
-#         #                 "currency": currency,
-#         #                 "capital": capital,
-#         #                 "region":region ,
-#         #                 "subregion": subregion,
-#         #                 "area": area,
-#         #                 "map_url": map_url,
-#         #                 "population": population,
-#         #                 "flag_url":flag_url
-#         #         }
-#         #         countries.append(new_obj)
-#         #         return jsonify(countries),201
-        
-        
+# def rowToDict(country):
+#                 obj={}
+#                 obj["id"]=country.id,
+#                 obj["name"]=country.name,
+#                 obj["cca"]=country.cca,
+#                 obj["currency_code"]=country.currency_code,
+#                 obj["currency"]=country.currency,
+#                 obj["capital"]=country.capital,
+#                 obj["region"]=country.region ,
+#                 obj["subregion"]=country.subregion,
+#                 obj["area"]=country.area,
+#                 obj["map_url"]=country.map_url,
+#                 obj["population"]=country.population,
+#                 obj["flag_url"]=country.flag_url
+#                 return obj
+ 
+# @app.route('/country', methods=['GET','POST'])
+# def country():
+#         if request.method == 'GET':
+                
+#                 #IF QUERIES/FILTERS  APPLICABLE
+                
+#                 page = request.args.get('page',  type=int)
+#                 limit = request.args.get('limit', type=int)
+#                 name = request.args.get('name')
+#                 region = request.args.get('region')
+#                 sub_region = request.args.get('subregion')
+#                 data = request.args.get('sort_by')
+                
+#                 sort_query = ''
+#                 search_query=''
+                
+#                 if data == 'a_toz':sort_query = '(CountryModel.name)'
+#                 elif data == 'z_toa':sort_query = '(CountryModel.name.desc())'
+#                 elif data == 'population_high_to_low':sort_query = '(CountryModel.population)'
+#                 elif data == 'population_low_to_high':sort_query = '(CountryModel.population.desc())'
+#                 elif data == 'area_high_to_low':sort_query = '(CountryModel.area)'
+#                 elif data == 'area_low_to_high':sort_query = '(CountryModel.area.desc())'
+
+#                 if name:search_query += 'name=name,'
+#                 if region:search_query += 'region=region,'
+#                 if sub_region:search_query += 'subregion=sub_region'
+
+#                 final_query = 'CountryModel.query'
+
+#                 if search_query: final_query += f'.filter_by({search_query})' 
+#                 if sort_query:   final_query += f'.order_by{sort_query}'
+                
 
 
+#                 final_query += f'.paginate(page={page}, per_page={limit})'
+#                 countries = eval(final_query)
+                
+        
+#                 #IF QUERIES/FILTERS NOT APPLICABLE and also continued for applicable
+                
+#                 # countries=CountryModel.query.all()
+#                 displayCountries={}
+#                 data={}
+#                 listcountry=[]
+#                 for country in countries:
+#                         obj=rowToDict(country)
+#                         listcountry.append(obj)
+#                 data['list']=listcountry
+#                 displayCountries['data']=data
+#                 displayCountries['message']='Country List'
+#                 return jsonify(displayCountries)
+        
+#         elif request.method == 'POST':
+#                 data = request.form
+#                 entry = CountryModel(id=data['id'], name=data['name'], cca=data['cca3'],
+#                                 currency_code=data['currency_code'], currency=data['currency'], capital=data['capital'],
+#                                 region=data['region'], subregion=data['subregion'],
+#                                 area=data['area'],
+#                                 map_url=data['map_url'], 
+#                                 population=data['population'],
+#                                 flag_url=data['flag_url'])
+
+#                 db.session.add(entry)
+#                 db.session.commit()
+#                 return 'received', 201
+
+
+# @app.route('/country/<id>')
+# def countryById(id):
+#         if request.method == 'GET':
+#                 displayCountries={}
+#                 data = {}
+#                 displayCountries['message'] = 'Country List'
+#                 country = CountryModel.query.filter_by(id=id).first()
+#                 obj=rowToDict(country)
+#                 data['country'] = obj
+#                 displayCountries['data'] = data
+#                 displayCountries['message']='Country List'
+#                 return jsonify(displayCountries),201
+
+# @app.route('/country/<id>/neighbour')
+# def neighbour(id):
+#         if request.method == 'GET':
+#                 displayCountries={}
+#                 data={}
+#                 listcountry=[]
+#                 country = CountryModel.query.filter_by(id=id).first()
+                
+#                 for neighbour in country.neighbours:
+#                         neighbour=CountryModel.query.filter_by(id=neighbour.id).first()
+#                         obj=rowToDict(neighbour)
+#                         listcountry.append(obj)
+#                 data['list']=listcountry
+#                 displayCountries['data']=data
+#                 displayCountries['message']='Country List'
+#                 return jsonify(displayCountries)
