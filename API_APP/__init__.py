@@ -13,7 +13,7 @@ def create_app():
     migrate.init_app(app)
     
     # with app.app_context():
-        # from API_APP import models
-        # db.create_all()
-        # from API_APP.routes import main
+    #     from API_APP import models
+    #     db.create_all()
+    #     # from API_APP.routes import main
     return app

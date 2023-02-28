@@ -2,7 +2,6 @@ from API_APP import create_app,db
 app=create_app()
 app.app_context().push()
 from flask import jsonify, request
-
 class CountryModel(db.Model):
     __tablename__='CountryModel'
     id=db.Column(db.Text,  nullable=False, primary_key=True) 
@@ -21,6 +20,7 @@ class CountryModel(db.Model):
     
     
 class CountryNeighbour(db.Model):
+
     id = db.Column(db.Integer, nullable=False, primary_key=True)
     country_id = db.Column(db.Integer, db.ForeignKey('CountryModel.id'), nullable=False)
     neighbour_country_id = db.Column(db.String,  nullable=False)
